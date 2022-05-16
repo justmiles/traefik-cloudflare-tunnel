@@ -1,0 +1,14 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: docker
+    image: plugins/docker
+    settings:
+      username: justmiles
+      password:
+        from_secret: docker_password
+      repo: justmiles/traefik-cloudflare-tunnel
+      tags: latest
+      squash: true
+      auto_tag: true
