@@ -12,7 +12,9 @@ Sync Cloudflare Zero-Trust tunnels from Traefik routes
 | CLOUDFLARE_TUNNEL_ID  | String | The ID of your cloudlfare tunnel                             |
 | CLOUDFLARE_ZONE_ID    | String | The cloudflare zone ID of your site.                         |
 | DOMAIN_NAME           | String | The domain name used for these tunnels                       |
-
+| TRAEFIK_API_ENDPOINT | String | The HTTP uri to Traefik's API (example: http://192.168.1.100:8081)                       |
+| TRAEFIK_SERVICE_ENDPOINT | String | The HTTP uri to Traefik's web entrypoint |
+| TRAEFIK_ENTRYPOINT | String | Optional. Only target routes registered to these entrypoints |
 
 ## Example
 
