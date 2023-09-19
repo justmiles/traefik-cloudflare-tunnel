@@ -20,7 +20,9 @@ Sync Cloudflare Zero-Trust tunnels from Traefik routes
 **Cloudflare Permissions**
 
 The `CLOUDFLARE_API_TOKEN` is your API token and you can create/obtain one here: https://dash.cloudflare.com/profile/api-tokens
+
 The `CLOUDFLARE_ACCOUNT_ID` is your account ID is a 32 character hash unique to you. After you login to cloudflare, you can find it in the URL here: https://dash.cloudflare.com
+
 The `CLOUDFLARE_TUNNEL_ID` is the ID of the Cloudflare tunnel. You can create one from the Zero Trust dashboard and navigating to Access -> Tunnels. The ID is under the name.
 
 Ensure the permissions for your Cloudflare token matches the following:
