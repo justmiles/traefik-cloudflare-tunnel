@@ -1,4 +1,4 @@
-# traefik-clo
+# traefik-cloudflare-tunnel
 
 Sync Cloudflare Zero-Trust tunnels from Traefik routes
 
