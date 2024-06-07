@@ -10,7 +10,7 @@ import (
 
 	"github.com/cloudflare/cloudflare-go"
 	"github.com/go-resty/resty/v2"
-	"github.com/traefik/traefik/v2/pkg/rules"
+	"github.com/traefik/traefik/v3/pkg/muxer/http"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -68,8 +68,7 @@ func main() {
 			if !contains(r.EntryPoints, os.Getenv("TRAEFIK_ENTRYPOINT")) {
 				continue
 			}
-
-			domains, err := rules.ParseDomains(r.Rule)
+			domains, err := http.ParseDomains(r.Rule)
 			if err != nil {
 				log.Fatal(err)
 			}

@@ -1,12 +1,14 @@
 module justmiles/traefik-cloudflare-tunnel
 
-go 1.17
+go 1.22
+
+toolchain go1.22.2
 
 require (
-	github.com/cloudflare/cloudflare-go v0.39.0
-	github.com/go-resty/resty/v2 v2.7.0
-	github.com/sirupsen/logrus v1.8.1
-	github.com/traefik/traefik/v2 v2.6.6
+	github.com/cloudflare/cloudflare-go v0.86.0
+	github.com/go-resty/resty/v2 v2.11.0
+	github.com/sirupsen/logrus v1.9.3
+	github.com/traefik/traefik/v3 v3.0.1
 )
 
 require (
@@ -14,22 +16,26 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/gravitational/trace v0.0.0-20190726142706-a535a178675f // indirect
-	github.com/jonboulle/clockwork v0.1.0 // indirect
-	github.com/miekg/dns v1.1.45 // indirect
+	github.com/gravitational/trace v1.1.16-0.20220114165159-14a9a7dd6aaf // indirect
+	github.com/jonboulle/clockwork v0.4.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/miekg/dns v1.1.58 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/traefik/paerser v0.1.5 // indirect
-	github.com/vulcand/predicate v1.1.0 // indirect
-	golang.org/x/crypto v0.0.0-20220513210258-46612604a0f9 // indirect
-	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
-	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65 // indirect
-	golang.org/x/tools v0.1.6-0.20210726203631-07bc1bf47fb2 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	github.com/rs/zerolog v1.29.0 // indirect
+	github.com/traefik/paerser v0.2.0 // indirect
+	github.com/vulcand/predicate v1.2.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/term v0.19.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/time v0.5.0 // indirect
+	golang.org/x/tools v0.20.0 // indirect
 )
 
 replace (
