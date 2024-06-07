@@ -1,3 +1,5 @@
+FROM golang:1.17 as builder
+
 # Create image from scratch
 FROM scratch
 
