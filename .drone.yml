@@ -1,14 +1,36 @@
 kind: pipeline
 name: default
+trigger:
+  ref:
+    - refs/tags/*
+
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
 
 steps:
-  - name: docker
-    image: plugins/docker
-    settings:
-      username: justmiles
-      password:
-        from_secret: docker_password
-      repo: justmiles/traefik-cloudflare-tunnel
-      tags: latest
-      squash: true
-      auto_tag: true
+  - name: test
+    image: golang
+    commands:
+      - go test -race -v ./... -cover
+
+  - name: release
+    image: goreleaser/goreleaser
+    environment:
+      GITHUB_TOKEN:
+        from_secret: github_token
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - goreleaser release
+    when:
+      event: tag
+
+volumes:
+  - name: dockersock
+    temp: {}
