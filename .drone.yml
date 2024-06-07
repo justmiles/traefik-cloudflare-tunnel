@@ -13,6 +13,16 @@ services:
         path: /var/run
 
 steps:
+
+  - name: fetch
+    image: docker:git
+    commands:
+      - git fetch --tags
+    environment:
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: "safe.directory"
+      GIT_CONFIG_VALUE_0: "*"
+
   - name: test
     image: golang
     commands:
