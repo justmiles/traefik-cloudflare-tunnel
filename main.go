@@ -50,7 +50,7 @@ func main() {
 		// update the cache
 		cache = poll.Routers
 
-		ingress := []cloudflare.TunnelConfigurationIngress{}
+		ingress := []cloudflare.UnvalidatedIngressRule{}
 
 		for _, r := range poll.Routers {
 			// Only enabled routes
@@ -79,11 +79,11 @@ func main() {
 					"service": os.Getenv("TRAEFIK_SERVICE_ENDPOINT"),
 				}).Info("upserting tunnel")
 
-				ingress = append(ingress, cloudflare.TunnelConfigurationIngress{
-					Service:  os.Getenv("TRAEFIK_SERVICE_ENDPOINT"),
+				ingress = append(ingress, cloudflare.UnvalidatedIngressRule{
 					Hostname: domain,
-					OriginRequest: cloudflare.TunnelConfigurationIngressOriginRequest{
-						HTTPHostHeader: domain,
+					Service:  os.Getenv("TRAEFIK_SERVICE_ENDPOINT"),
+					OriginRequest: &cloudflare.OriginRequestConfig{
+						HTTPHostHeader: &domain,
 					},
 				})
 			}
@@ -91,7 +91,7 @@ func main() {
 		}
 
 		// add catch-all rule
-		ingress = append(ingress, cloudflare.TunnelConfigurationIngress{
+		ingress = append(ingress, cloudflare.UnvalidatedIngressRule{
 			Service: "http_status:404",
 		})
 
@@ -133,23 +133,20 @@ func pollTraefikRouters(client *resty.Client) (ch chan PollResponse) {
 	return
 }
 
-func updateTunnels(ctx context.Context, cf *cloudflare.API, ingress []cloudflare.TunnelConfigurationIngress) error {
+func updateTunnels(ctx context.Context, cf *cloudflare.API, ingress []cloudflare.UnvalidatedIngressRule) error {
 
 	// Get Current tunnel config
-	cfg, err := cf.TunnelConfiguration(ctx, cloudflare.TunnelConfigurationParams{
-		AccountID: os.Getenv("CLOUDFLARE_ACCOUNT_ID"),
-		TunnelID:  os.Getenv("CLOUDFLARE_TUNNEL_ID"),
-	})
+	aid := cloudflare.AccountIdentifier(os.Getenv("CLOUDFLARE_ACCOUNT_ID"))
+	cfg, err := cf.GetTunnelConfiguration(ctx, aid, os.Getenv("CLOUDFLARE_TUNNEL_ID"))
 	if err != nil {
 		return fmt.Errorf("unable to pull current tunnel config, %s", err.Error())
 	}
 
 	// Update config with new ingress rules
-	cfg.Ingress = ingress
-	cfg, err = cf.TunnelConfigurationUpdate(ctx, cloudflare.TunnelConfigurationUpdateParams{
-		AccountID: os.Getenv("CLOUDFLARE_ACCOUNT_ID"),
-		TunnelID:  os.Getenv("CLOUDFLARE_TUNNEL_ID"),
-		Config:    cfg,
+	cfg.Config.Ingress = ingress
+	cfg, err = cf.UpdateTunnelConfiguration(ctx, aid, cloudflare.TunnelConfigurationParams{
+		TunnelID: os.Getenv("CLOUDFLARE_TUNNEL_ID"),
+		Config:   cfg.Config,
 	})
 	if err != nil {
 		return fmt.Errorf("unable to update tunnel config, %s", err.Error())
@@ -173,13 +170,20 @@ func updateTunnels(ctx context.Context, cf *cloudflare.API, ingress []cloudflare
 			Proxied: &proxied,
 		}
 
-		r, err := cf.DNSRecords(ctx, os.Getenv("CLOUDFLARE_ZONE_ID"), cloudflare.DNSRecord{Name: i.Hostname})
+		zid := cloudflare.ZoneIdentifier(os.Getenv("CLOUDFLARE_ZONE_ID"))
+		r, _, err := cf.ListDNSRecords(ctx, zid, cloudflare.ListDNSRecordsParams{Name: i.Hostname})
 		if err != nil {
 			return fmt.Errorf("err checking DNS records, %s", err.Error())
 		}
 
 		if len(r) == 0 {
-			_, err := cf.CreateDNSRecord(ctx, os.Getenv("CLOUDFLARE_ZONE_ID"), record)
+			_, err := cf.CreateDNSRecord(ctx, zid, cloudflare.CreateDNSRecordParams{
+				Name:    record.Name,
+				Type:    record.Type,
+				Content: record.Content,
+				TTL:     record.TTL,
+				Proxied: record.Proxied,
+			})
 			if err != nil {
 				return fmt.Errorf("unable to create DNS record, %s", err.Error())
 			}
@@ -190,7 +194,14 @@ func updateTunnels(ctx context.Context, cf *cloudflare.API, ingress []cloudflare
 		}
 
 		if r[0].Content != record.Content {
-			err = cf.UpdateDNSRecord(ctx, os.Getenv("CLOUDFLARE_ZONE_ID"), r[0].ID, record)
+			_, err = cf.UpdateDNSRecord(ctx, zid, cloudflare.UpdateDNSRecordParams{
+				ID:      record.ID,
+				Name:    record.Name,
+				Type:    record.Type,
+				Content: record.Content,
+				TTL:     record.TTL,
+				Proxied: record.Proxied,
+			})
 			if err != nil {
 				return fmt.Errorf("could not update record for %s, %s", i.Hostname, err)
 			}
